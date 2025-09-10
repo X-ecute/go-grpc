@@ -44,13 +44,13 @@ func New() (Store, error) {
 	return Store{db: db}, nil
 }
 
-func (s Store) GetRocketByID(id string) (rocket.Rocket, error) {
+func (s *Store) GetRocketByID(id string) (rocket.Rocket, error) {
 	return rocket.Rocket{}, nil
 }
-func (s Store) InsertRocket(rocket rocket.Rocket) (rocket.Rocket, error) {
+func (s *Store) InsertRocket(rocket rocket.Rocket) (rocket.Rocket, error) {
 	return rocket, nil
 }
 
-func (s Store) DeleteRocket(id string) error {
+func (s *Store) DeleteRocket(id string) error {
 	return nil
 }
