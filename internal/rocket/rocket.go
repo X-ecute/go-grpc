@@ -37,7 +37,7 @@ func New(store Store) Service {
 }
 
 // GetRocketByID - retrieves a rocket based on the ID from the store
-func (s Service) GetRocketByID(ctx context.Context, id string) (Rocket, error) {
+func (s *Service) GetRocketByID(ctx context.Context, id string) (Rocket, error) {
 	rkt, err := s.Store.GetRocketByID(id)
 	if err != nil {
 		return Rocket{}, err
@@ -46,7 +46,7 @@ func (s Service) GetRocketByID(ctx context.Context, id string) (Rocket, error) {
 }
 
 // InsertRocket - inserts a new rocket into the store.
-func (s Service) InsertRocket(ctx context.Context, rkt Rocket) (Rocket, error) {
+func (s *Service) InsertRocket(ctx context.Context, rkt Rocket) (Rocket, error) {
 	rkt, err := s.Store.InsertRocket(rkt)
 	if err != nil {
 		return Rocket{}, err
@@ -55,7 +55,7 @@ func (s Service) InsertRocket(ctx context.Context, rkt Rocket) (Rocket, error) {
 }
 
 // DeleteRocket - deletes a rocket from our inventory
-func (s Service) DeleteRocket(ctx context.Context, id string) error {
+func (s *Service) DeleteRocket(ctx context.Context, id string) error {
 	log.Print(id)
 	err := s.Store.DeleteRocket(id)
 	if err != nil {

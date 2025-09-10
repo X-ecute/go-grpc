@@ -2,10 +2,10 @@ version: '3.8'
 services:
   db:
     image: postgres:17-alpine
-    container_name: 'go-grpc-db'
+    container_name: 'go_grpc_db'
     restart: always
     env_file:
-      - .env  # Load environment variables from .env file
+      - .env
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -14,6 +14,31 @@ services:
       - "${POSTGRES_PORT_DOCKER}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DATABASE}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    container_name: "grpc-microservice"
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE}
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_SSLMODE=${POSTGRES_SSLMODE:-disable}
+    ports:
+      - "50051:50051"
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - app-network
 

@@ -18,7 +18,7 @@ func Run() error {
 		log.Fatal("failed to migrate rocket store")
 		return err
 	}
-	_ = rocket.New(rocketStore)
+	_ = rocket.New(&rocketStore)
 	return nil
 }
 
