@@ -1,18 +1,13 @@
 //go:generate mockgen -destination=rocket_mocks_test.go -package=rocket github.com/X-ecute/go-grpc/internal/rocket Store
 package rocket
 
-import "context"
+import (
+	"context"
+	"log"
+)
 
-// Store - the interface we expect
-// our db implementation to follow
-type Store interface {
-	GetRocketById(id int) (Rocket, error)
-	InsertRocket(rocket Rocket) (Rocket, error)
-	UpdateRocket(rocket Rocket) (Rocket, error)
-	DeleteRocket(id string) error
-}
-
-// Rocket - Definition of our rocket
+// Rocket - should contain the definition of our
+// rocket
 type Rocket struct {
 	ID      string
 	Name    string
@@ -20,38 +15,51 @@ type Rocket struct {
 	Flights int
 }
 
-// Service  - responsible gor updating the rocker inventory
+// Store - defines the interface we expect
+// our database implementation to follow
+type Store interface {
+	GetRocketByID(id string) (Rocket, error)
+	InsertRocket(rkt Rocket) (Rocket, error)
+	DeleteRocket(id string) error
+}
+
+// Service - our rocket service, responsible for
+// updating the rocket inventory
 type Service struct {
 	Store Store
 }
 
-// NewService - returns a new instance of our rocket service
-func NewService(store Store) Service {
+// New - returns a new instance of our rocket service
+func New(store Store) Service {
 	return Service{
 		Store: store,
 	}
 }
 
-// GetRocketById - retrieves a rocket based on ID
-func (s Service) GetRocketById(ctx context.Context, id int) (Rocket, error) {
-	rkt, err := s.Store.GetRocketById(id)
+// GetRocketByID - retrieves a rocket based on the ID from the store
+func (s Service) GetRocketByID(ctx context.Context, id string) (Rocket, error) {
+	rkt, err := s.Store.GetRocketByID(id)
 	if err != nil {
 		return Rocket{}, err
 	}
 	return rkt, nil
 }
 
-// InsertRocket - inserts a rocket into the store
-func (s Service) InsertRocket(ctx context.Context, rocket Rocket) (Rocket, error) {
-	return s.Store.InsertRocket(rocket)
+// InsertRocket - inserts a new rocket into the store.
+func (s Service) InsertRocket(ctx context.Context, rkt Rocket) (Rocket, error) {
+	rkt, err := s.Store.InsertRocket(rkt)
+	if err != nil {
+		return Rocket{}, err
+	}
+	return rkt, nil
 }
 
-// UpdateRocket - updates a rocket in store
-func (s Service) UpdateRocket(ctx context.Context, rocket Rocket) (Rocket, error) {
-	return s.Store.UpdateRocket(rocket)
-}
-
-// DeleteRocket - deletes a rocket from the store
+// DeleteRocket - deletes a rocket from our inventory
 func (s Service) DeleteRocket(ctx context.Context, id string) error {
-	return s.Store.DeleteRocket(id)
+	log.Print(id)
+	err := s.Store.DeleteRocket(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
